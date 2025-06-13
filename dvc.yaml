@@ -1,0 +1,12 @@
+stages:
+  download:
+    cmd: clob download
+    outs:
+      - data/raw
+  preprocess:
+    cmd: clob preprocess
+    deps:
+      - data/raw
+    outs:
+      - data/processed
+

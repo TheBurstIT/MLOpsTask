@@ -1,0 +1,6 @@
+asset: "BTC"
+raw_dir: "data/raw"
+processed_dir: "data/processed"
+window_ms: 100
+horizon_ms: 300
+

@@ -1,0 +1,10 @@
+defaults:
+  - data: data
+  - model: model
+  - logging: logging
+
+batch_size: 256
+max_epochs: 3
+num_workers: 4
+seed: 42
+
