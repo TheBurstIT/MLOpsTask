@@ -2,13 +2,13 @@
 name = "crypto-lob-micro-move"
 version = "0.1.0"
 description = "Crypto LOB micro-move classifier (BTC/ETH/ADA)"
-authors = ["<ваше_имя>"]
+authors = ["Ahmet <ahmet@example.com>"]
 
 packages = [{ include = "crypto_lob", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-torch = "^2.2"
+torch = "2.2.2"
 pytorch-lightning = "^2.2"
 torchmetrics = "^1.3"
 pandas = "^2.2"
@@ -20,7 +20,7 @@ dvc = "^3.42"
 fire = "^0.6"
 scikit-learn = "^1.4"
 rich = "^13.7"
-kagglehub = "^0.12"          # → dataset_download()
+kagglehub = { git = "https://github.com/Kaggle/kagglehub.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6"
@@ -31,4 +31,3 @@ flake8 = "^7.0"
 
 [tool.poetry.scripts]
 clob = "crypto_lob.commands:entry"
-
