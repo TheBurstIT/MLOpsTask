@@ -37,15 +37,15 @@ class LOBDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             self.train_ds,
-            batch_size=self.cfg.train.batch_size,
+            batch_size=self.cfg.batch_size,
             shuffle=True,
-            num_workers=self.cfg.train.num_workers,
+            num_workers=self.cfg.num_workers,
         )
 
     def val_dataloader(self):
         return DataLoader(
             self.val_ds,
-            batch_size=self.cfg.train.batch_size,
+            batch_size=self.cfg.batch_size,
             shuffle=False,
-            num_workers=self.cfg.train.num_workers,
+            num_workers=self.cfg.num_workers,
         )
