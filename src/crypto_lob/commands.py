@@ -1,10 +1,11 @@
-# src/crypto_lob/commands.py
+import os
 from pathlib import Path
 from typing import Sequence
 
 import fire
 import pytorch_lightning as pl
 from hydra import compose, initialize_config_dir
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 # from omegaconf import OmegaConf
 
@@ -13,19 +14,12 @@ CFG_DIR = Path(__file__).resolve().parents[2] / "configs"
 
 
 def _cfg(overrides: Sequence[str]):
-    """
-    Собираем Hydra-конфиг из defaults + списка overrides.
-    overrides -- iterable of strings, например ["model.n_inputs=4590"]
-    """
     with initialize_config_dir(version_base="1.3", config_dir=str(CFG_DIR)):
         return compose(config_name="train", overrides=list(overrides))
 
 
 # ──────────────────────────── Служебная обёртка ────────────────────────
 def _get(cfg, path: str, default=None):
-    """
-    Безопасно вытаскиваем cfg.train.xxx или cfg.xxx
-    """
     *maybe_train, leaf = path.split(".")
     holder = cfg
     for part in maybe_train:
@@ -76,28 +70,32 @@ def train(*ovr):
         tracking_uri=cfg.logging.mlflow_uri,
     )
 
+    ckpt_cb = ModelCheckpoint(
+        dirpath="artifacts",
+        filename="best",
+        save_top_k=1,
+        monitor="val_f1",
+        mode="max",
+    )
+
     trainer = pl.Trainer(
         max_epochs=int(_get(cfg, "train.max_epochs", 3)),
         deterministic=True,
         logger=logger,
+        callbacks=[ckpt_cb],
     )
     trainer.fit(model, dm)
 
 
 # ───────────────────────────────── entry ───────────────────────────────
 def entry():
-    """
-    Точка входа для poetry script «clob».
-    Пример CLI:
-        clob download
-        clob preprocess data.lookback=30
-        clob train model.n_inputs=4590 max_epochs=5
-    """
     fire.Fire(
         {
             "download": download,
             "preprocess": preprocess,
             "train": train,
+            "export": export_cpu,
+            "serve": serve_cpu,
         }
     )
 
@@ -105,3 +103,33 @@ def entry():
 # удобен прямой запуск:  python -m crypto_lob.commands train ...
 if __name__ == "__main__":
     entry()
+
+
+def export_cpu(*ovr):
+    cfg = _cfg(ovr)
+    ckpt = Path("artifacts/best.ckpt")
+    onnx = Path("artifacts/model.onnx")
+
+    # 1) ckpt → onnx
+    from crypto_lob.export.onnx_export import main as to_onnx
+
+    to_onnx(["--ckpt", str(ckpt), "--out", str(onnx)])
+
+    # 2) Triton repo
+    from crypto_lob.serving.build_repo import main as build
+
+    build(["--onnx", str(onnx), "--n_inputs", str(cfg.model.n_inputs)])
+
+
+def serve_cpu():
+    """
+    Запускает Triton Inference Server на CPU.
+    Требуется установленный Docker (GPU не нужен).
+    """
+    cmd = (
+        "docker run -p8000:8000 -p8001:8001 "
+        "-v $(pwd)/docker/triton/models:/models "
+        "nvcr.io/nvidia/tritonserver:23.11-py3 "
+        "tritonserver --model-repository=/models --strict-readiness=false"
+    )
+    os.system(cmd)

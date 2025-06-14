@@ -3,12 +3,14 @@ import torch
 import torch.nn as nn
 
 # import torchmetrics
-from omegaconf import OmegaConf
-from torchmetrics.classification import MulticlassF1Score  # ← добавим
+from omegaconf import DictConfig, OmegaConf
+from torchmetrics.classification import MulticlassF1Score
 
 
 class MLPLit(pl.LightningModule):
     def __init__(self, cfg):
+        if not isinstance(cfg, DictConfig):
+            cfg = OmegaConf.create(cfg)
         super().__init__()
         self.save_hyperparameters(OmegaConf.to_container(cfg, resolve=True))
         n_in = cfg.model.n_inputs
