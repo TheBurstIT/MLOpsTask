@@ -1,7 +1,8 @@
 defaults:
-  - data: data
-  - model: model
-  - logging: logging
+  - _self_
+  - data: default
+  - model: mlp
+  - logging: default
 
 batch_size: 256
 max_epochs: 3

@@ -3,3 +3,5 @@ raw_dir: "data/raw"
 processed_dir: "data/processed"
 window_ms: 100
 horizon_ms: 300
+csv_file: "BTC_1sec.csv"
+lookback: 30

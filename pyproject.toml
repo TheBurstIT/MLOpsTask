@@ -31,3 +31,11 @@ flake8 = "^7.0"
 
 [tool.poetry.scripts]
 clob = "crypto_lob.commands:entry"
+
+[tool.flake8]
+ignore = ["E501"]
+
+[tool.isort]
+profile = "black"
+line_length = 88      # в тон black
+multi_line_output = 3 # (опц.) чтобы чётко совпадал стиль многострочных импортов

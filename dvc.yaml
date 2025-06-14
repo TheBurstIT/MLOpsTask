@@ -1,11 +1,9 @@
 stages:
-  download:
-    cmd: clob download
-    outs:
-      - data/raw
-  preprocess:
-    cmd: clob preprocess
+  download:  {cmd: clob download, outs: [data/raw]}
+  preprocess:{cmd: clob preprocess, deps: [data/raw], outs: [data/processed]}
+  train:
+    cmd: clob train
     deps:
-      - data/raw
+      - data/processed/btc_1sec.npz
     outs:
-      - data/processed
+      - artifacts/best.ckpt
