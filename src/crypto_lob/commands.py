@@ -121,15 +121,16 @@ def export_cpu(*ovr):
     build(["--onnx", str(onnx), "--n_inputs", str(cfg.model.n_inputs)])
 
 
-def serve_cpu():
+def serve_cpu(port: int = 9001):
     """
-    Запускает Triton Inference Server на CPU.
-    Требуется установленный Docker (GPU не нужен).
+    Запускает ONNX-Runtime Server на CPU.
+    Аргумент `port` — внешний порт хоста (по умолчанию 9001).
     """
+    image = "mcr.microsoft.com/onnxruntime/server:latest"
     cmd = (
-        "docker run -p8000:8000 -p8001:8001 "
-        "-v $(pwd)/docker/triton/models:/models "
-        "nvcr.io/nvidia/tritonserver:23.11-py3 "
-        "tritonserver --model-repository=/models --strict-readiness=false"
+        f"docker run -p{port}:8001 "
+        "-v $(pwd)/artifacts/model.onnx:/models/model.onnx "
+        f"{image} "
+        "--model_path /models/model.onnx --http_port 8001"
     )
     os.system(cmd)

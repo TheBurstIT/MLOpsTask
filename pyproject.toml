@@ -21,6 +21,8 @@ fire = "^0.6"
 scikit-learn = "^1.4"
 rich = "^13.7"
 kagglehub = { git = "https://github.com/Kaggle/kagglehub.git", branch = "main" }
+onnx = "^1.16"
+onnxruntime = "^1.18"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6"
