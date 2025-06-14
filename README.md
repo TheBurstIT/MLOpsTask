@@ -17,7 +17,7 @@
 ---
 
 ## 2 · Repo layout
-
+```bash
 crypto-lob-micro-move/
 ├─ src/cryptolob/
 │ ├─ commands.py # Fire CLI
@@ -31,7 +31,7 @@ crypto-lob-micro-move/
 ├─ docker/triton/models/ # generated model-repo
 ├─ dvc.yaml
 └─ README.md
-
+```
 
 ---
 
