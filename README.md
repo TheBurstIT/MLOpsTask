@@ -34,7 +34,6 @@ crypto-lob-micro-move/
 ```
 
 ---
-
 # Part I · Setup 🛠️
 
 > Requires Python 3.10+ and Docker. **No GPU needed.**
@@ -50,8 +49,9 @@ poetry install
 # Dev helpers
 pre-commit install
 dvc init            # if you forked; otherwise `dvc pull`
-
+```
 Part II · Train
+```bash
 # 0 · data
 poetry run clob download
 
@@ -64,21 +64,22 @@ poetry run clob train model.n_inputs=4590 max_epochs=5 batch_size=256
 key=value after the command are Hydra overrides; combine as you like.
 Full pipeline via DVC:
 dvc repro train
-
+```
 #Part III · Production preparation
 
 Lightning ckpt → ONNX
 poetry run clob export --ckpt=artifacts/best.ckpt
 
 Build Triton CPU repo
-
+```bash
 Artifacts delivered with the model:
 artifacts/model.onnx
 docker/triton/models/micromove/
     ├─ 1/model.onnx
     └─ config.pbtxt
-
+```
 #Part IV · Infer
+```bash
 1 · launch Triton CPU-only
 docker run -p8000:8000 -p8001:8001 \
        -v $(pwd)/docker/triton/models:/models \
@@ -104,3 +105,4 @@ r = requests.post("http://localhost:8000/v2/models/micromove/infer",
 print(r.json())      # logits for classes [↓, →, ↑]
 
 Input format — flattened window of 30 LOB snapshots (4590 floats).
+```
